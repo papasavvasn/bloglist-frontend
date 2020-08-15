@@ -1,9 +1,17 @@
 import axios from 'axios'
+import { unpack } from './login'
 const baseUrl = 'http://localhost:3003/api/blogs'
 
-const getAll = () => {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+type Post = {
+  title: string;
+  author: string;
+  url: string;
 }
 
-export default { getAll }
+let token: string | undefined = undefined;
+
+export const setToken = (tokenArg: string) => token = `bearer ${tokenArg}`
+
+export const getAll = () => axios.get(baseUrl).then(unpack)
+
+export const addPost = (post: Post) => axios.post(baseUrl, post, { headers: { Authorization: token as string } }).then(unpack)
