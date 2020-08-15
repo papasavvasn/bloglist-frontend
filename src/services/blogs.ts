@@ -14,4 +14,4 @@ export const setToken = (tokenArg: string) => token = `bearer ${tokenArg}`
 
 export const getAll = () => axios.get(baseUrl).then(unpack)
 
-export const addPost = (post: Post) => axios.post(baseUrl, post, { headers: { Authorization: token as string } }).then(unpack)
+export const addBlog = (post: Post) => axios.post(baseUrl, post, { headers: { Authorization: token as string } }).then(unpack)

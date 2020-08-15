@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react'
 import Blog from './components/Blog'
-import { getAll, setToken, addPost } from './services/blogs'
+import { getAll, setToken, addBlog } from './services/blogs'
 import { login } from './services/login'
+import { Notification } from './Notifications'
 
 type Blog = {
   id: string
@@ -16,12 +17,24 @@ type User = {
 const App = () => {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [user, setUser] = useState<User | null>(null)
+  const [notification, setNotification] = useState<string | null>(null)
+  const [notificationType, setNotificationType] = useState<"error" | "success">("success")
 
   const usernameRef = useRef<HTMLInputElement | null>(null)
   const passwordRef = useRef<HTMLInputElement | null>(null)
   const titleRef = useRef<HTMLInputElement | null>(null)
   const authorRef = useRef<HTMLInputElement | null>(null)
   const urlRef = useRef<HTMLInputElement | null>(null)
+
+  const displayNotification = ({ message, type }: { message: string, type: "success" | "error" }) => {
+    setNotificationType(type)
+    setNotification(
+      `${message}`
+    )
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
 
   useEffect(() => {
     const loggedInUserJSON = window.localStorage.getItem('loggedInUser')
@@ -53,7 +66,7 @@ const App = () => {
       usernameRef.current!.value = ""
       passwordRef.current!.value = ""
     } catch (e) {
-      console.log("there was an error", e);
+      displayNotification({ message: e.response?.data?.error, type: "error" })
     }
   }
 
@@ -63,13 +76,15 @@ const App = () => {
     const author = authorRef.current!.value
     const url = urlRef.current!.value
     try {
-      await addPost({ title, author, url })
-      getBlogs()
+      await addBlog({ title, author, url })
+      setBlogs(oldBlogs => [...oldBlogs,])
+      displayNotification({ message: "A new blog was added!!", type: "success" })
       titleRef.current!.value = ""
       authorRef.current!.value = ""
       urlRef.current!.value = ""
     } catch (e) {
       console.log("Error", e);
+      displayNotification({ message: "The creation of the new blog failed, please try again", type: "error" })
     }
 
   }
@@ -77,6 +92,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
+        <Notification message={notification} type={notificationType} />
         <h2>Log in to application</h2>
         <form onSubmit={onSubmit}>
           <div>
@@ -95,6 +111,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notification} type={notificationType} />
       <h2>blogs</h2>
       {`${user.name} is logged in`} <br />
       <br />
