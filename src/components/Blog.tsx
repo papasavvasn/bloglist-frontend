@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { addLike } from '../services/blogs'
 
-export type Blog = {
+export interface IBlog {
   title: string;
   author: string;
   url: string;
@@ -16,8 +15,9 @@ export type Blog = {
 }
 
 type BlogProps = {
-  blog: Blog
+  blog: IBlog
   onDeleteBlog: (id: string) => void
+  onLike: (blog: IBlog) => void
 }
 
 const blogStyle = {
@@ -28,11 +28,10 @@ const blogStyle = {
   marginBottom: 5
 }
 
-export const Blog = ({ blog, onDeleteBlog }: BlogProps) => {
+export const Blog = ({ blog, onDeleteBlog, onLike }: BlogProps) => {
 
-  const { title, author, url, likes: initialLikes, id } = blog
+  const { title, author, url, likes } = blog
   const [showDetails, setShowDetails] = useState<boolean>(false)
-  const [likes, setLikes] = useState<number>(initialLikes)
   const [username, setUsername] = useState<string>('')
 
   function onDelete() {
@@ -49,19 +48,14 @@ export const Blog = ({ blog, onDeleteBlog }: BlogProps) => {
     }
   }, [])
 
-  const onLike = () => addLike({ blogId: id, blog: { ...blog, likes: likes + 1 } })
-    .then(() => { setLikes(likes + 1) }, e => {
-      console.log('there was an error adding a like', e)
-    })
-
   return (
     <div style={blogStyle}>
       {title} <button onClick={() => { setShowDetails(!showDetails) }}> {showDetails ? 'hide' : 'view'} </button>
+      <div>{author}</div>
       {showDetails && (
         <>
           <div>{url}</div>
-          <div>{likes} <button onClick={onLike}>like</button> </div>
-          <div>{author}</div>
+          <div>{likes} <button onClick={() => onLike(blog)}>like</button> </div>
           {username === blog?.user?.username && <button onClick={onDelete}>Remove</button>}
         </>
       )}

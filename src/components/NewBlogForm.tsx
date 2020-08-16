@@ -1,15 +1,14 @@
 import React, { FormEvent, useRef } from 'react'
-import { addBlog } from '../services/blogs'
-
-type Ref = React.MutableRefObject<HTMLInputElement | null>
+import { SubmitBlog } from '../services/blogs'
 
 type NewBlogFormProps = {
     setDisplayCreateNewNoteForm: React.Dispatch<React.SetStateAction<boolean>>
     displayNotification: ({ message, type }: { message: string; type: 'success' | 'error' }) => void
     getBlogs: () => Promise<void>
+    addBlog: (blog: SubmitBlog) => Promise<any>
 }
 
-export const NewBlogForm = ({ setDisplayCreateNewNoteForm, displayNotification, getBlogs }: NewBlogFormProps) => {
+export const NewBlogForm = ({ addBlog, setDisplayCreateNewNoteForm, displayNotification, getBlogs }: NewBlogFormProps) => {
 
     const titleRef = useRef<HTMLInputElement | null>(null)
     const authorRef = useRef<HTMLInputElement | null>(null)
@@ -39,15 +38,15 @@ export const NewBlogForm = ({ setDisplayCreateNewNoteForm, displayNotification, 
             <form onSubmit={onCreateNew}>
                 <div>
                     <label htmlFor="title"><b>Title</b></label>
-                    <input type="text" placeholder="Enter Title" name="title" required ref={titleRef} />
+                    <input type="text" placeholder="Enter Title" name="title" id='title' required ref={titleRef} />
                 </div>
                 <div>
                     <label htmlFor="author"><b>Author</b></label>
-                    <input type="text" placeholder="Enter Author" name="author" required ref={authorRef} />
+                    <input type="text" placeholder="Enter Author" name="author" id='author' required ref={authorRef} />
                 </div>
                 <div>
                     <label htmlFor="url"><b>Url</b></label>
-                    <input type="text" placeholder="Url" name="url" required ref={urlRef} />
+                    <input type="text" placeholder="Url" name="url" id='url' required ref={urlRef} />
                 </div>
                 <button type="submit">Create Post</button>
             </form>

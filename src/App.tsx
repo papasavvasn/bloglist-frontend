@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react'
-import { Blog } from './components/Blog'
-import { getAll, setToken, deleteBlog } from './services/blogs'
+import { Blog, IBlog } from './components/Blog'
+import { addBlog, getAll, addLike, setToken, deleteBlog, SubmitBlog } from './services/blogs'
 import { login } from './services/login'
 import { Notification } from './components/Notifications'
 import { NewBlogForm } from './components/NewBlogForm'
@@ -13,7 +13,7 @@ type User = {
 }
 
 const App = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [blogs, setBlogs] = useState<IBlog[]>([])
   const [user, setUser] = useState<User | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
   const [notificationType, setNotificationType] = useState<'error' | 'success'>('success')
@@ -51,6 +51,19 @@ const App = () => {
     deleteBlog(id).then(
       () => { getAll().then(blogs => setBlogs(blogs)) },
       e => { console.log('error', e) })
+  }
+
+  const addBlogCb = (blog: SubmitBlog) => addBlog(blog)
+
+  const onLike = (blog: IBlog) => {
+    addLike({ blogId: blog.id, blog: { ...blog, likes: blog.likes + 1 } })
+      .then(() => {
+        const likedBlog = { ...blog, likes: blog.likes + 1 }
+        const indexOfLikedBlog = blogs.findIndex(el => el.id === blog.id)
+        setBlogs([...blogs.slice(0, indexOfLikedBlog), likedBlog, ...blogs.slice(indexOfLikedBlog + 1)])
+      }, e => {
+        console.log('there was an error adding a like', e)
+      })
   }
 
   useEffect(() => {
@@ -108,6 +121,7 @@ const App = () => {
         ?
         <button onClick={() => { setDisplayCreateNewNoteForm(true) }} >new note</button>
         : <NewBlogForm
+          addBlog={addBlogCb}
           getBlogs={getBlogs}
           setDisplayCreateNewNoteForm={setDisplayCreateNewNoteForm}
           displayNotification={displayNotification}
@@ -115,7 +129,7 @@ const App = () => {
 
       <br />
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog as Blog} onDeleteBlog={onDeleteBlog} />
+        <Blog key={blog.id} blog={blog as IBlog} onDeleteBlog={onDeleteBlog} onLike={onLike} />
       )}
 
     </div>
