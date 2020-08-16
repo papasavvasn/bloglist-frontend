@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { addLike } from '../services/blogs'
 
 export type Blog = {
@@ -6,7 +7,7 @@ export type Blog = {
   author: string;
   url: string;
   likes: number;
-  id: string
+  id: string;
   user?: {
     id: string;
     name: string;
@@ -69,4 +70,18 @@ export const Blog = ({ blog, onDeleteBlog }: BlogProps) => {
 }
 
 
-export default Blog
+Blog.propTypes = {
+  onDeleteBlog: PropTypes.func.isRequired,
+  blog: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    likes: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
+    user: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired,
+    })
+  }).isRequired
+}
