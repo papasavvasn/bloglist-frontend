@@ -16,6 +16,7 @@
     "@testing-library/react": "^9.5.0",
     "@types/prop-types": "^15.7.3",
     "cypress": "^4.12.1",
+    "eslint-plugin-cypress": "^2.11.1",
     "typescript": "^3.9.7"
   },
   "scripts": {
