@@ -16,14 +16,14 @@ const App = () => {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [user, setUser] = useState<User | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
-  const [notificationType, setNotificationType] = useState<"error" | "success">("success")
+  const [notificationType, setNotificationType] = useState<'error' | 'success'>('success')
   const [displayCreateNewNoteForm, setDisplayCreateNewNoteForm] = useState<boolean>(false)
 
   const usernameRef = useRef<HTMLInputElement | null>(null)
   const passwordRef = useRef<HTMLInputElement | null>(null)
 
 
-  const displayNotification = ({ message, type }: { message: string, type: "success" | "error" }) => {
+  const displayNotification = ({ message, type }: { message: string, type: 'success' | 'error' }) => {
     setNotificationType(type)
     setNotification(
       `${message}`
@@ -50,7 +50,7 @@ const App = () => {
   const onDeleteBlog = (id: string) => {
     deleteBlog(id).then(
       () => { getAll().then(blogs => setBlogs(blogs)) },
-      e => { console.log("error", e) })
+      e => { console.log('error', e) })
   }
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const App = () => {
       usernameRef.current = null
       passwordRef.current = null
     } catch (e) {
-      displayNotification({ message: e.response?.data?.error, type: "error" })
+      displayNotification({ message: e.response?.data?.error, type: 'error' })
     }
   }
 
@@ -99,7 +99,7 @@ const App = () => {
       <h2>blogs</h2>
       {`${user.name} is logged in `}
       <button onClick={() => {
-        window.localStorage.removeItem("loggedInUser")
+        window.localStorage.removeItem('loggedInUser')
         setUser(null)
       }
       }>Log out</button>

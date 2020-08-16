@@ -33,16 +33,16 @@ export const Blog = ({ blog, onDeleteBlog }: BlogProps) => {
   const { title, author, url, likes: initialLikes, id } = blog
   const [showDetails, setShowDetails] = useState<boolean>(false)
   const [likes, setLikes] = useState<number>(initialLikes)
-  const [username, setUsername] = useState<string>("")
+  const [username, setUsername] = useState<string>('')
 
   function onDelete() {
-    if (window.confirm("are you sure you want to delete this blog?")) {
+    if (window.confirm('are you sure you want to delete this blog?')) {
       onDeleteBlog(blog.id)
     }
   }
 
   useEffect(() => {
-    const usernameOfLoggedInUserJSON = window.localStorage.getItem("loggedInUser")
+    const usernameOfLoggedInUserJSON = window.localStorage.getItem('loggedInUser')
     if (usernameOfLoggedInUserJSON) {
       let username = JSON.parse(usernameOfLoggedInUserJSON).username
       setUsername(username)
@@ -51,7 +51,7 @@ export const Blog = ({ blog, onDeleteBlog }: BlogProps) => {
 
   const onLike = () => addLike({ blogId: id, blog: { ...blog, likes: likes + 1 } })
     .then(() => { setLikes(likes + 1) }, e => {
-      console.log("there was an error adding a like", e);
+      console.log('there was an error adding a like', e)
     })
 
   return (

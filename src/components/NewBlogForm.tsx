@@ -5,7 +5,7 @@ type Ref = React.MutableRefObject<HTMLInputElement | null>
 
 type NewBlogFormProps = {
     setDisplayCreateNewNoteForm: React.Dispatch<React.SetStateAction<boolean>>
-    displayNotification: ({ message, type }: { message: string; type: "success" | "error" }) => void
+    displayNotification: ({ message, type }: { message: string; type: 'success' | 'error' }) => void
     getBlogs: () => Promise<void>
 }
 
@@ -22,14 +22,14 @@ export const NewBlogForm = ({ setDisplayCreateNewNoteForm, displayNotification, 
         const url = urlRef.current!.value
         try {
             await addBlog({ title, author, url, likes: 0 })
-            displayNotification({ message: "A new blog was added!!", type: "success" })
+            displayNotification({ message: 'A new blog was added!!', type: 'success' })
             getBlogs()
-            titleRef.current!.value = ""
-            authorRef.current!.value = ""
-            urlRef.current!.value = ""
+            titleRef.current!.value = ''
+            authorRef.current!.value = ''
+            urlRef.current!.value = ''
             setDisplayCreateNewNoteForm(false)
         } catch (e) {
-            displayNotification({ message: "The creation of the new blog failed, please try again", type: "error" })
+            displayNotification({ message: 'The creation of the new blog failed, please try again', type: 'error' })
         }
     }
 

@@ -9,7 +9,7 @@ type Blog = {
   likes: number;
 }
 
-let token: string | undefined = undefined;
+let token: string | undefined = undefined
 
 export const setToken = (tokenArg: string) => token = `bearer ${tokenArg}`
 

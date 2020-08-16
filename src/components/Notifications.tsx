@@ -1,7 +1,7 @@
 import React from 'react'
-import "./Notifications.css"
+import './Notifications.css'
 
-export const Notification = ({ message, type }: { message: string | null, type: "success" | "error" }) => {
+export const Notification = ({ message, type }: { message: string | null, type: 'success' | 'error' }) => {
     if (message === null) {
         return null
     }
