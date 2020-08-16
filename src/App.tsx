@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react'
-import Blog from './components/Blog'
-import { getAll, setToken, addBlog } from './services/blogs'
+import { Blog } from './components/Blog'
+import { getAll, setToken, deleteBlog } from './services/blogs'
 import { login } from './services/login'
-import { Notification } from './Notifications'
+import { Notification } from './components/Notifications'
+import { NewBlogForm } from './components/NewBlogForm'
 
-type Blog = {
-  id: string
-}
 
 type User = {
   token: string;
@@ -19,12 +17,11 @@ const App = () => {
   const [user, setUser] = useState<User | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
   const [notificationType, setNotificationType] = useState<"error" | "success">("success")
+  const [displayCreateNewNoteForm, setDisplayCreateNewNoteForm] = useState<boolean>(false)
 
   const usernameRef = useRef<HTMLInputElement | null>(null)
   const passwordRef = useRef<HTMLInputElement | null>(null)
-  const titleRef = useRef<HTMLInputElement | null>(null)
-  const authorRef = useRef<HTMLInputElement | null>(null)
-  const urlRef = useRef<HTMLInputElement | null>(null)
+
 
   const displayNotification = ({ message, type }: { message: string, type: "success" | "error" }) => {
     setNotificationType(type)
@@ -50,6 +47,12 @@ const App = () => {
     setBlogs(blogs)
   }
 
+  const onDeleteBlog = (id: string) => {
+    deleteBlog(id).then(
+      () => { getAll().then(blogs => setBlogs(blogs)) },
+      e => { console.log("error", e) })
+  }
+
   useEffect(() => {
     getBlogs()
   }, [])
@@ -63,30 +66,11 @@ const App = () => {
       setUser(user)
       setToken(user.token)
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
-      usernameRef.current!.value = ""
-      passwordRef.current!.value = ""
+      usernameRef.current = null
+      passwordRef.current = null
     } catch (e) {
       displayNotification({ message: e.response?.data?.error, type: "error" })
     }
-  }
-
-  async function onCreateNew(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const title = titleRef.current!.value
-    const author = authorRef.current!.value
-    const url = urlRef.current!.value
-    try {
-      await addBlog({ title, author, url })
-      setBlogs(oldBlogs => [...oldBlogs,])
-      displayNotification({ message: "A new blog was added!!", type: "success" })
-      titleRef.current!.value = ""
-      authorRef.current!.value = ""
-      urlRef.current!.value = ""
-    } catch (e) {
-      console.log("Error", e);
-      displayNotification({ message: "The creation of the new blog failed, please try again", type: "error" })
-    }
-
   }
 
   if (user === null) {
@@ -113,32 +97,26 @@ const App = () => {
     <div>
       <Notification message={notification} type={notificationType} />
       <h2>blogs</h2>
-      {`${user.name} is logged in`} <br />
-      <br />
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
+      {`${user.name} is logged in `}
       <button onClick={() => {
         window.localStorage.removeItem("loggedInUser")
         setUser(null)
       }
       }>Log out</button>
-      <h2>create new</h2>
-      <form onSubmit={onCreateNew}>
-        <div>
-          <label htmlFor="title"><b>Title</b></label>
-          <input type="text" placeholder="Enter Title" name="title" required ref={titleRef} />
-        </div>
-        <div>
-          <label htmlFor="author"><b>Author</b></label>
-          <input type="text" placeholder="Enter Author" name="author" required ref={authorRef} />
-        </div>
-        <div>
-          <label htmlFor="url"><b>Url</b></label>
-          <input type="text" placeholder="Url" name="url" required ref={urlRef} />
-        </div>
-        <button type="submit">Create Post</button>
-      </form>
+      <br />
+      {!displayCreateNewNoteForm
+        ?
+        <button onClick={() => { setDisplayCreateNewNoteForm(true) }} >new note</button>
+        : <NewBlogForm
+          getBlogs={getBlogs}
+          setDisplayCreateNewNoteForm={setDisplayCreateNewNoteForm}
+          displayNotification={displayNotification}
+        />}
+
+      <br />
+      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+        <Blog key={blog.id} blog={blog as Blog} onDeleteBlog={onDeleteBlog} />
+      )}
 
     </div>
   )
