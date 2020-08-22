@@ -49,13 +49,13 @@ export const Blog = ({ blog, onDeleteBlog, onLike }: BlogProps) => {
   }, [])
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} data-cy="post">
       {title} <button onClick={() => { setShowDetails(!showDetails) }}> {showDetails ? 'hide' : 'view'} </button>
       <div>{author}</div>
       {showDetails && (
         <>
           <div>{url}</div>
-          <div>{likes} <button onClick={() => onLike(blog)}>like</button> </div>
+          <div>{likes} <button onClick={() => onLike(blog)}>like</button></div>
           {username === blog?.user?.username && <button onClick={onDelete}>Remove</button>}
         </>
       )}

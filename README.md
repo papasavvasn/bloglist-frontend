@@ -6,4 +6,4 @@ To run the Cypress tests:
 
 1. start the backend with: npm run  start:test
 2. start the frontend with: npm run start
-3. start Cypress from the FE repo with: npm run cypress:open
+3. start Cypress from the FE repo with: npm run cypress:open or test:e2e 
