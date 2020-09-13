@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Blog, IBlog } from './components/Blog'
 import { addBlog, getAll, addLike, setToken, deleteBlog, SubmitBlog } from './services/blogs'
 import { login } from './services/login'
 import { Notification } from './components/Notifications'
 import { NewBlogForm } from './components/NewBlogForm'
+import { setNotification, Type } from './reducers/notificationReducer'
+import { RootState } from "./store"
 
 
 type User = {
@@ -15,22 +18,18 @@ type User = {
 const App = () => {
   const [blogs, setBlogs] = useState<IBlog[]>([])
   const [user, setUser] = useState<User | null>(null)
-  const [notification, setNotification] = useState<string | null>(null)
-  const [notificationType, setNotificationType] = useState<'error' | 'success'>('success')
   const [displayCreateNewNoteForm, setDisplayCreateNewNoteForm] = useState<boolean>(false)
+  const notificationText: string = useSelector((state: RootState) => state.notification.notificationText)
+  const notificationType: Type = useSelector((state: RootState) => state.notification.type)
+  const isVisible = useSelector((state: RootState) => state.notification.isVisible)
+  const dispatch = useDispatch()
 
   const usernameRef = useRef<HTMLInputElement | null>(null)
   const passwordRef = useRef<HTMLInputElement | null>(null)
 
 
   const displayNotification = ({ message, type }: { message: string, type: 'success' | 'error' }) => {
-    setNotificationType(type)
-    setNotification(
-      `${message}`
-    )
-    setTimeout(() => {
-      setNotification(null)
-    }, 5000)
+    dispatch(setNotification({ notificationText: message, type, time: 5 }))
   }
 
   useEffect(() => {
@@ -89,7 +88,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <Notification message={notification} type={notificationType} />
+        <Notification message={notificationText} type={notificationType} />
         <h2>Log in to application</h2>
         <form onSubmit={onSubmit}>
           <div>
@@ -108,7 +107,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={notification} type={notificationType} />
+      {isVisible && <Notification message={notificationText} type={notificationType} />}
       <h2>blogs</h2>
       {`${user.name} is logged in `}
       <button onClick={() => {
